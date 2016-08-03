@@ -52,4 +52,5 @@ function renderFullPage(html, preloadedState) {
 
 const server = app.listen(port, () => {
   console.log('Service started on port :' + port);
+  console.log(process.env.PG_URL);
 })
