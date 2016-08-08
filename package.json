@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "watch": "supervisor src/index.js",
+    "start": "node src/server/index.js",
+    "watch": "supervisor -w src/server src/server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,10 +15,10 @@
     "node": "6.2.0"
   },
   "dependencies": {
-    "babel-cli": "^6.11.4",
     "babel-loader": "^6.2.4",
     "babel-polyfill": "^6.9.1",
-    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-es2015": "^6.13.1",
+    "babel-preset-es2015-loose": "^7.0.0",
     "babel-preset-react": "^6.11.1",
     "dotenv": "^2.0.0",
     "express": "^4.14.0",
@@ -28,10 +28,13 @@
     "redux": "^3.5.2",
     "redux-thunk": "^2.1.0",
     "webpack": "^1.13.1",
-    "webpack-dev-middleware": "^1.6.1"
+    "webpack-dev-middleware": "^1.6.1",
+    "webpack-hot-middleware": "^2.12.2"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
-    "babel-watch": "^2.0.2"
+    "babel-preset-react-hmre": "^1.1.1",
+    "babel-watch": "^2.0.2",
+    "node-supervisor": "^1.0.2"
   }
 }

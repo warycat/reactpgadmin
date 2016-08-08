@@ -1,10 +1,11 @@
-var path = require('path')
-var webpack = require('webpack')
+import path from 'path'
+import webpack from 'webpack'
 
 module.exports = {
   devtool: 'inline-source-map',
   entry: [
-    './src/client.js'
+    'webpack-hot-middleware/client',
+    './src/client/index.js'
   ],
   output: {
     path: path.join(__dirname, 'dist'),
@@ -13,15 +14,20 @@ module.exports = {
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin()
   ],
   module: {
     loaders: [
       {
         test: /\.js$/,
-        loader: 'babel?cacheDirectory',
+        loader: 'babel',
         exclude: /node_modules/,
         include: __dirname,
+        query: {
+          cacheDirectory: true,
+          presets: ['react-hmre']
+        }
       }
     ]
-  }
+  },
 }
