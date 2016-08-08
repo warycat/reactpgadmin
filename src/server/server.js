@@ -22,12 +22,8 @@ const compiler = webpack(webpackConfig)
 
 app.use(webpackDevMiddleware(compiler, {
   publicPath: webpackConfig.output.publicPath,
-  stats: {
-    colors: true,
-    chunkModules: false
-  },
+  stats: { colors: true }
 }))
-app.use(webpackHotMiddleware(compiler))
 
 app.use(handleRender)
 
@@ -64,7 +60,7 @@ function renderFullPage(html, preloadedState) {
     <!doctype html>
     <html>
       <head>
-        <title>Redux Universal Example</title>
+        <title>Redux Server Rendering</title>
       </head>
       <body>
         <div id="app">${html}</div>

@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/server/index.js",
-    "watch": "supervisor -w src/server src/server/index.js",
+    "watch": "BABEL_ENV=production supervisor -w src/server,src/common src/server/index.js",
+    "dev": "webpack-dev-server --progress --inline --hot",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -35,6 +36,8 @@
     "babel-cli": "^6.11.4",
     "babel-preset-react-hmre": "^1.1.1",
     "babel-watch": "^2.0.2",
-    "node-supervisor": "^1.0.2"
+    "html-webpack-plugin": "^2.22.0",
+    "node-supervisor": "^1.0.2",
+    "webpack-dev-server": "^1.14.1"
   }
 }
