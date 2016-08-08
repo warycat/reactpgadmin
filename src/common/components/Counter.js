@@ -1,25 +1,22 @@
 import React, { Component, PropTypes } from 'react'
-import * as A from '../actions'
+import { bindActionCreators } from 'redux'
+import * as actions from '../actions'
 import { connect } from 'react-redux'
 
 class Counter extends Component {
-  c1() {
-    console.log('234234')
-  }
-
   render() {
-    const { counter, dispatch } = this.props
+    const { counter, increment, decrement, incrementIfOdd, incrementAsync} = this.props
     return (
       <p>
         Clicked: {counter} times
         {' '}
-        <button onClick={this.c1}>+</button>
+        <button onClick={increment}>+</button>
         {' '}
-        <button onClick={dispatch(A.decrement())}>-</button>
+        <button onClick={decrement}>-</button>
         {' '}
-        <button onClick={dispatch(A.incrementIfOdd())}>Increment if odd</button>
+        <button onClick={incrementIfOdd}>Increment if odd</button>
         {' '}
-        <button onClick={dispatch(A.incrementAsync())}>Increment async</button>
+        <button onClick={incrementAsync}>Increment async</button>
       </p>
     )
   }
@@ -30,7 +27,7 @@ Counter = connect(
     return {counter: state.counter}
   },
   (dispatch) => {
-    return {dispatch: dispatch}
+    return bindActionCreators(actions, dispatch)
   }
 )(Counter)
 
