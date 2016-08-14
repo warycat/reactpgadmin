@@ -3,17 +3,14 @@ import express from 'express'
 
 import webpack from 'webpack'
 import webpackDevMiddleware from 'webpack-dev-middleware'
-import webpackHotMiddleware from 'webpack-hot-middleware'
 import webpackConfig from '../../webpack.config'
 
 import React from 'react'
 import { renderToString } from 'react-dom/server'
-import { Provider } from 'react-redux'
 
 import App from '../common/components/App'
-import configureStore from '../common/configureStore'
+import MainStore from '../common/stores/MainStore'
 import packageJson from '../../package.json'
-import { fetchCounter } from '../common/api/counter'
 
 const app = express()
 const port = process.env.PORT || 3000;
@@ -28,42 +25,25 @@ app.use(webpackDevMiddleware(compiler, {
 app.use(handleRender)
 
 function handleRender(req, res) {
-  // Query our mock API asynchronously
-  fetchCounter(apiResult => {
-    // Read the counter from the request, if provided
-    const params = qs.parse(req.query)
-    const counter = parseInt(params.counter, 10) || apiResult || 0
+  const params = qs.parse(req.query)
+  const store = MainStore.fromJS({title: 'reactpgadmin'})
 
-    // Compile an initial state
-    const preloadedState = { counter }
-
-    // Create a new Redux store instance
-    const store = configureStore(preloadedState)
-
-    // Render the component to a string
-    const html = renderToString(
-      <Provider store={store}>
-        <App />
-      </Provider>
-    )
-
-    // Grab the initial state from our Redux store
-    const finalState = store.getState()
-
-    // Send the rendered page back to the client
-    res.send(renderFullPage(html, finalState))
-  })
+  const app = renderToString(
+    <App store={store} />
+  )
+  const finalState = store.toJS()
+  res.send(renderFullPage(app, finalState))
 }
 
-function renderFullPage(html, preloadedState) {
+function renderFullPage(app, preloadedState) {
   return `
     <!doctype html>
     <html>
       <head>
-        <title>Redux Server Rendering</title>
+        <title>Mobx Server Rendering</title>
       </head>
       <body>
-        <div id="app">${html}</div>
+        <div id="app">${app}</div>
         <script>
           window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\x3c')}
         </script>

@@ -15,7 +15,7 @@ module.exports = {
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new HtmlWebpackPlugin({
-      filename: 'index.html',
+      filename: '/index.html',
       template: 'src/client/index.html'
     })
   ],
@@ -33,7 +33,7 @@ module.exports = {
     ]
   },
   devServer: {
-    contentBase: './dist',
+    contentBase: 'dist',
     port: 3000
   },
   devtool:'cheap-module-source-map'

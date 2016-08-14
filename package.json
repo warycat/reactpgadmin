@@ -4,8 +4,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/server/index.js",
-    "watch": "BABEL_ENV=production supervisor -w src/server,src/common src/server/index.js",
-    "dev": "webpack-dev-server --progress --inline --hot",
+    "ssr": "BABEL_ENV=production supervisor -w src/server,src/common src/server/index.js",
+    "csr": "webpack-dev-server --progress --inline --hot",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,27 +16,29 @@
     "node": "6.2.0"
   },
   "dependencies": {
+    "dotenv": "^2.0.0",
+    "express": "^4.14.0",
+    "mobx": "^2.4.3",
+    "mobx-react": "^3.5.5",
+    "react": "^15.2.1",
+    "react-dom": "^15.2.1",
+    "webpack": "^1.13.1",
+    "webpack-dev-middleware": "^1.6.1",
+    "webpack-hot-middleware": "^2.12.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.11.4",
     "babel-loader": "^6.2.4",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-polyfill": "^6.9.1",
     "babel-preset-es2015": "^6.13.1",
     "babel-preset-es2015-loose": "^7.0.0",
     "babel-preset-react": "^6.11.1",
-    "dotenv": "^2.0.0",
-    "express": "^4.14.0",
-    "react": "^15.2.1",
-    "react-dom": "^15.2.1",
-    "react-redux": "^4.4.5",
-    "redux": "^3.5.2",
-    "redux-thunk": "^2.1.0",
-    "webpack": "^1.13.1",
-    "webpack-dev-middleware": "^1.6.1",
-    "webpack-hot-middleware": "^2.12.2",
-    "html-webpack-plugin": "^2.22.0"
-  },
-  "devDependencies": {
-    "babel-cli": "^6.11.4",
     "babel-preset-react-hmre": "^1.1.1",
+    "babel-preset-stage-1": "^6.13.0",
     "babel-watch": "^2.0.2",
+    "html-webpack-plugin": "^2.22.0",
+    "mobx-react-devtools": "^4.2.4",
     "node-supervisor": "^1.0.2",
     "webpack-dev-server": "^1.14.1"
   }
