@@ -5,7 +5,8 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   devtool: 'inline-source-map',
   entry: [
-    './src/client/client.js'
+    'webpack-hot-middleware/client',
+    path.join(__dirname, './src/client/client.js'),
   ],
   output: {
     path: path.join(__dirname, 'dist'),
@@ -13,7 +14,8 @@ module.exports = {
     publicPath: '/static/'
   },
   plugins: [
-    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       filename: '/index.html',
       template: 'src/client/index.html'
@@ -23,12 +25,15 @@ module.exports = {
     loaders: [
       {
         test: /\.js$/,
-        loader: 'babel',
+        loaders: ['react-hot', 'babel'],
         exclude: /node_modules/,
         include: __dirname,
-        query: {
-          cacheDirectory: true,
-        }
+      },
+      {
+        test: /\.json$/,
+        loader: 'json',
+        exclude: /node_modules/,
+        include: __dirname,
       }
     ]
   },

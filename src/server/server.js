@@ -1,4 +1,3 @@
-import querystring from 'querystring'
 import express from 'express'
 import webpack from 'webpack'
 import webpackDevMiddleware from 'webpack-dev-middleware'
@@ -17,9 +16,9 @@ const compiler = webpack(webpackConfig)
 
 server.use(webpackDevMiddleware(compiler, {
   publicPath: webpackConfig.output.publicPath,
-  stats: { colors: true },
-  version: packageJson.version,
+  stats: { colors: true }
 }))
+server.use(require("webpack-hot-middleware")(compiler));
 
 function renderFullPage(app, preloadedState) {
   return `
@@ -40,12 +39,12 @@ function renderFullPage(app, preloadedState) {
 }
 
 function handleRender(req, res) {
-  const params = querystring.parse(req.query)
   const store = MainStore.fromJS({
     title: 'reactpgadmin',
     userAgent: req.headers['user-agent'],
-    babelEnv: process.env.BABEL_ENV,
-    params,
+    nodeEnv: process.env.NODE_ENV,
+    version: packageJson.version,
+    params: req.query
   })
   const app = renderToString(
     <App store={store} />
