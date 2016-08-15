@@ -26,12 +26,12 @@ app.use(handleRender)
 
 function handleRender(req, res) {
   const params = qs.parse(req.query)
-  const store = MainStore.fromJS({title: 'reactpgadmin'})
-
+  const store = MainStore.fromJS({title: 'reactpgadmin', userAgent: req.headers['user-agent']})
   const app = renderToString(
     <App store={store} />
   )
   const finalState = store.toJS()
+  console.log(finalState)
   res.send(renderFullPage(app, finalState))
 }
 
