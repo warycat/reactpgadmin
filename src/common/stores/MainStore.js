@@ -3,18 +3,21 @@ import { observable } from 'mobx'
 export default class MainStore {
   @observable title
   userAgent
+  babelEnv
+  version
 
-  toJS(){
+  toJS() {
     return {
       title: this.title,
-      userAgent: this.userAgent
+      userAgent: this.userAgent,
+      babelEnv: this.babelEnv,
+      version: this.version,
     }
   }
 
-  static fromJS(obj){
+  static fromJS(obj) {
     const mainStore = new MainStore()
-    mainStore.title = obj.title
-    mainStore.userAgent = obj.userAgent
+    Object.assign(mainStore, obj)
     return mainStore
   }
 }

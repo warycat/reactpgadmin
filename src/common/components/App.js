@@ -1,22 +1,26 @@
 import React, { Component } from 'react'
-import { observable, computed, action} from 'mobx'
+import { observable, computed, action } from 'mobx'
 import { observer } from 'mobx-react'
 import DevTools from 'mobx-react-devtools'
-import injectTapEventPlugin from 'react-tap-event-plugin';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import darkBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import AppBar from 'material-ui/AppBar';
-import Drawer from 'material-ui/Drawer';
-import MenuItem from 'material-ui/MenuItem';
+import injectTapEventPlugin from 'react-tap-event-plugin'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import darkBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import AppBar from 'material-ui/AppBar'
+import Drawer from 'material-ui/Drawer'
+import MenuItem from 'material-ui/MenuItem'
 
-injectTapEventPlugin();
+injectTapEventPlugin()
 
 @observer
-class App extends Component{
-  render (){
+class App extends Component {
+  changeTitle = () => {
+    this.props.store.title = 'React PG Admin'
+  }
+  render() {
     const { store } = this.props
-    const theme = getMuiTheme(darkBaseTheme, { userAgent: store.userAgent })
+    const devTools = store.babelEnv === 'development' ? <DevTools /> : null
+    const theme = getMuiTheme(darkBaseTheme, { userAgent: store.userAnpgent })
     return (
       <div>
         <MuiThemeProvider muiTheme={theme}>
@@ -33,13 +37,10 @@ class App extends Component{
             <button onClick={this.changeTitle}>Change Me </button>
           </div>
         </MuiThemeProvider>
-        <DevTools/>
+        {devTools}
       </div>
-    );
+    )
   }
-  changeTitle = () => {
-    this.props.store.title = 'React PG Admin'
-  }
-};
+}
 
 export default App

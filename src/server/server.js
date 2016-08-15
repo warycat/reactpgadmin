@@ -1,39 +1,25 @@
-import qs from 'qs'
+import querystring from 'querystring'
 import express from 'express'
-
 import webpack from 'webpack'
 import webpackDevMiddleware from 'webpack-dev-middleware'
-import webpackConfig from '../../webpack.config'
-
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 
+import webpackConfig from '../../webpack.config'
 import App from '../common/components/App'
 import MainStore from '../common/stores/MainStore'
 import packageJson from '../../package.json'
 
-const app = express()
-const port = process.env.PORT || 3000;
+const server = express()
+const port = process.env.PORT || 3000
 
 const compiler = webpack(webpackConfig)
 
-app.use(webpackDevMiddleware(compiler, {
+server.use(webpackDevMiddleware(compiler, {
   publicPath: webpackConfig.output.publicPath,
-  stats: { colors: true }
+  stats: { colors: true },
+  version: packageJson.version,
 }))
-
-app.use(handleRender)
-
-function handleRender(req, res) {
-  const params = qs.parse(req.query)
-  const store = MainStore.fromJS({title: 'reactpgadmin', userAgent: req.headers['user-agent']})
-  const app = renderToString(
-    <App store={store} />
-  )
-  const finalState = store.toJS()
-  console.log(finalState)
-  res.send(renderFullPage(app, finalState))
-}
 
 function renderFullPage(app, preloadedState) {
   return `
@@ -45,7 +31,7 @@ function renderFullPage(app, preloadedState) {
       <body>
         <div id="app">${app}</div>
         <script>
-          window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\x3c')}
+          window.PRELOADED_STATE = ${JSON.stringify(preloadedState).replace(/</g, '\\x3c')}
         </script>
         <script src="/static/bundle.js"></script>
       </body>
@@ -53,7 +39,24 @@ function renderFullPage(app, preloadedState) {
     `
 }
 
-app.listen(port, (error) => {
+function handleRender(req, res) {
+  const params = querystring.parse(req.query)
+  const store = MainStore.fromJS({
+    title: 'reactpgadmin',
+    userAgent: req.headers['user-agent'],
+    babelEnv: process.env.BABEL_ENV,
+    params,
+  })
+  const app = renderToString(
+    <App store={store} />
+  )
+  const finalState = store.toJS()
+  res.send(renderFullPage(app, finalState))
+}
+
+server.use(handleRender)
+
+server.listen(port, (error) => {
   if (error) {
     console.error(error)
   } else {
