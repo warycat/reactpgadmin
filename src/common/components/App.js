@@ -7,12 +7,23 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import AppBar from 'material-ui/AppBar'
 import Drawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
-import FontIcon from 'material-ui/FontIcon';
+import FontIcon from 'material-ui/FontIcon'
+import HardwareVideogameAsset from 'material-ui/svg-icons/hardware/videogame-asset'
+import {white, red500, greenA200} from 'material-ui/styles/colors';
+import { observable, computed } from 'mobx'
+
+function OpenInNewTab(url) {
+  console.log(url)
+  var win = window.open(url, '_blank');
+  win.focus();
+}
 
 @observer
 class App extends Component {
+  @observable drawer = {open: false}
   render() {
     const { store } = this.props
+    const iconStyles = { margin: 12 }
     const theme = getMuiTheme(darkBaseTheme, { userAgent: store.userAgent })
     return (
       <div>
@@ -20,15 +31,16 @@ class App extends Component {
           <div>
             <AppBar
               title={store.titleAndVersion}
-              iconClassNameRight="muidocs-icon-navigation-doc"
+              onLeftIconButtonTouchTap={() => this.drawer.open = true}
             />
-            <Drawer open={false}>
+            <Drawer
+              open={this.drawer.open}
+              docked={false}
+              onRequestChange={(open) => this.drawer.open = open}
+            >
               <MenuItem>Tables</MenuItem>
               <MenuItem>About</MenuItem>
             </Drawer>
-
-            <button onClick={() => store.changeTitle()}>Change Me </button>
-            <button onClick={() => store.changeTitle()}>Change Me </button>
           </div>
         </MuiThemeProvider>
         <DevTools />

@@ -26,6 +26,7 @@ function renderFullPage(app, preloadedState) {
     <html>
       <head>
         <title>Mobx Server Rendering</title>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
       </head>
       <body>
         <div id="app">${app}</div>

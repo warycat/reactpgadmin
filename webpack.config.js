@@ -15,11 +15,7 @@ module.exports = {
   },
   plugins: [
     new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
-    new HtmlWebpackPlugin({
-      filename: '/index.html',
-      template: 'src/client/index.html'
-    })
+    new webpack.HotModuleReplacementPlugin()
   ],
   module: {
     loaders: [

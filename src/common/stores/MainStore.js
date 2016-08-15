@@ -30,4 +30,5 @@ export default class MainStore {
   changeTitle() {
     this.title = 'React PG Admin'
   }
+
 }
