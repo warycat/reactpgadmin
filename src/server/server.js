@@ -8,13 +8,20 @@ import webpackConfig from '../../webpack.config'
 import App from '../common/components/App'
 import MainStore from '../common/stores/MainStore'
 import packageJson from '../../package.json'
-
+import massive from 'massive'
 const server = express()
 const port = process.env.PORT || 3000
 
 const compiler = webpack(webpackConfig)
+var massiveInstance = massive.connectSync({connectionString : process.env.PG_URL})
+server.set('db', massiveInstance);
+
+var db = server.get('db');
+//-------------------------------------------------
+var tables = db.views.map(view => { return {schema: view.schema, name: view.name} })
 
 server.use(webpackDevMiddleware(compiler, {
+  noInfo: true,
   publicPath: webpackConfig.output.publicPath,
   stats: { colors: true }
 }))
@@ -45,7 +52,8 @@ function handleRender(req, res) {
     userAgent: req.headers['user-agent'],
     nodeEnv: process.env.NODE_ENV,
     version: packageJson.version,
-    params: req.query
+    params: req.query,
+    tables: tables
   })
   const app = renderToString(
     <App store={store} />
@@ -54,7 +62,15 @@ function handleRender(req, res) {
   res.send(renderFullPage(app, finalState))
 }
 
-server.use(handleRender)
+server.get('/', handleRender)
+
+server.get('/db', (req, res) => {
+  console.log(req.query)
+  const qs = req.query
+  db[qs.schema][qs.name].find((err, data)=>{
+    res.json(data)
+  })
+})
 
 server.listen(port, (error) => {
   if (error) {

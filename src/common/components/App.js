@@ -9,18 +9,70 @@ import Drawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
 import FontIcon from 'material-ui/FontIcon'
 import HardwareVideogameAsset from 'material-ui/svg-icons/hardware/videogame-asset'
-import {white, red500, greenA200} from 'material-ui/styles/colors';
+import {white, red500, greenA200} from 'material-ui/styles/colors'
+import "babel-polyfill"
 import { observable, computed } from 'mobx'
+import {List, ListItem} from 'material-ui/List'
+import _ from 'lodash'
+import Checkbox from 'material-ui/Checkbox'
+import backIcon from 'material-ui/svg-icons/navigation/arrow-back.js'
 
 function OpenInNewTab(url) {
-  console.log(url)
   var win = window.open(url, '_blank');
   win.focus();
 }
 
 @observer
+class Menu extends Component {
+  render() {
+    const { menu, onItemClick } = this.props
+    console.log(menu)
+    const list = _.map(menu, (value, schema) => {
+      const sublist = value.map(name => { 
+        return <ListItem
+          key={name}
+          primaryText={name}
+          leftCheckbox={<Checkbox onClick={_.partial(onItemClick, 'table', {name: name, schema: schema})} />}
+        />
+      })
+      return <ListItem
+        key={schema}
+        primaryText={schema}
+        primaryTogglesNestedList={true}
+        nestedItems={sublist}
+      />
+    })
+    return <List>
+      <ListItem
+        primaryText="Home"
+        leftIcon={<FontIcon className='material-icons' >home</FontIcon>}
+        onClick={_.partial(onItemClick, 'home')}
+      />
+      <ListItem
+        primaryText="Tables"
+        primaryTogglesNestedList={true}
+        leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
+        nestedItems={list}
+      />
+    </List>
+  }
+}
+
+@observer
+class LeftNav extends Component {
+  render() {
+    const { menu, onItemClick, open } = this.props
+    return <Drawer open={open}>
+      <Menu menu={menu} onItemClick={onItemClick} />
+    </Drawer>
+  }
+
+}
+
+@observer
 class App extends Component {
   @observable drawer = {open: false}
+  @observable table = {display: false, name: '', schema: ''}
   render() {
     const { store } = this.props
     const iconStyles = { margin: 12 }
@@ -33,19 +85,27 @@ class App extends Component {
               title={store.titleAndVersion}
               onLeftIconButtonTouchTap={() => this.drawer.open = true}
             />
-            <Drawer
+            <LeftNav
+              menu={store.menu}
               open={this.drawer.open}
-              docked={false}
-              onRequestChange={(open) => this.drawer.open = open}
-            >
-              <MenuItem>Tables</MenuItem>
-              <MenuItem>About</MenuItem>
-            </Drawer>
+              onItemClick={this.handleMenuItemClick}
+            />
           </div>
         </MuiThemeProvider>
         <DevTools />
       </div>
     )
+  }
+  handleMenuItemClick = (item, payload) => {
+    switch(item){
+      case 'home':
+        this.drawer.open = false
+        break
+      case 'table':
+        console.log(payload)
+        break
+      default:
+    }
   }
 }
 
