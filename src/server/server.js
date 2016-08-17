@@ -13,12 +13,9 @@ const server = express()
 const port = process.env.PORT || 3000
 
 const compiler = webpack(webpackConfig)
-var massiveInstance = massive.connectSync({connectionString : process.env.PG_URL})
-server.set('db', massiveInstance);
-
-var db = server.get('db');
-//-------------------------------------------------
-var tables = db.views.map(view => { return {schema: view.schema, name: view.name} })
+var db = massive.connectSync({connectionString : process.env.PG_URL})
+console.log(db)
+var tables = db.tables.map(view => { return {schema: view.schema, name: view.name} })
 
 server.use(webpackDevMiddleware(compiler, {
   noInfo: true,
