@@ -3,6 +3,7 @@ import webpack from 'webpack'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import React from 'react'
 import { renderToString } from 'react-dom/server'
+import pgp from 'pg-promise'
 
 import webpackConfig from '../../webpack.config'
 import App from '../common/components/App'
@@ -13,9 +14,8 @@ const server = express()
 const port = process.env.PORT || 3000
 
 const compiler = webpack(webpackConfig)
-var db = massive.connectSync({connectionString : process.env.PG_URL})
+const db = pgp()(process.env.PG_URL)
 console.log(db)
-var tables = db.tables.map(view => { return {schema: view.schema, name: view.name} })
 
 server.use(webpackDevMiddleware(compiler, {
   noInfo: true,
@@ -50,7 +50,6 @@ function handleRender(req, res) {
     nodeEnv: process.env.NODE_ENV,
     version: packageJson.version,
     params: req.query,
-    tables: tables
   })
   const app = renderToString(
     <App store={store} />
@@ -61,12 +60,11 @@ function handleRender(req, res) {
 
 server.get('/', handleRender)
 
-server.get('/db', (req, res) => {
-  console.log(req.query)
+server.get('/db/query', (req, res) => {
   const qs = req.query
-  db[qs.schema][qs.name].find((err, data)=>{
-    res.json(data)
-  })
+  db.query(qs.text, qs.values)
+    .then(data => res.json(data))
+    .catch(err => res.json(err))
 })
 
 server.listen(port, (error) => {
