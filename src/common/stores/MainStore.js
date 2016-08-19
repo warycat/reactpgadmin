@@ -1,17 +1,27 @@
 import { observable, computed } from 'mobx'
 import _ from 'lodash'
+import ajax from 'superagent-bluebird-promise'
 
 export default class MainStore {
   @observable title
+  @observable pg_tables
+  @observable pg_views
+  @observable err
   userAgent
   babelEnv
   version
   params
-  tables
-  menu
 
   @computed get titleAndVersion() {
     return `${this.title} V${this.version}`
+  }
+
+  @computed get tablesLists() {
+    return _.reduce(this.pg_tables, (schemanames,table) => {
+      schemanames[table.schemaname] = schemanames[table.schemaname] || []
+      schemanames[table.schemaname].push(table.tablename)
+      return schemanames
+    }, {})
   }
 
   toJS() {
@@ -21,18 +31,12 @@ export default class MainStore {
       nodeEnv: this.nodeEnv,
       version: this.version,
       params: this.params,
-      tables: this.tables,
     }
   }
 
   static fromJS(obj) {
     const mainStore = new MainStore()
     Object.assign(mainStore, obj)
-    mainStore.menu = _(obj.tables).reduce((menu, table) => {
-      menu[table.schema] = menu[table.schema] || []
-      menu[table.schema].push(table.name)
-      return menu
-    }, {})
     return mainStore
   }
 
@@ -40,4 +44,14 @@ export default class MainStore {
     this.title = 'React PG Admin'
   }
 
+  requestTables() {
+    ajax.get('/db/query')
+      .query({text: 'SELECT * FROM PG_CATALOG.PG_TABLES'})
+      .then(res => {
+        this.pg_tables = res.body
+      })
+      .catch(err => {
+        this.err = err
+      })
+  }
 }

@@ -14,22 +14,26 @@ function OpenInNewTab(url) {
   win.focus();
 }
 
-@observer
+@inject('store') @observer
 class Menu extends Component {
   render() {
-    const { menu, onItemClick } = this.props
-    console.log(menu)
-    const list = _.map(menu, (value, schema) => {
-      const sublist = value.map(name => { 
+    const { onItemClick, store } = this.props
+    const list = _.map(store.tablesLists, (tables, schemaname) => {
+      const sublist = tables.map(tablename => {
         return <ListItem
-          key={name}
-          primaryText={name}
-          leftCheckbox={<Checkbox onClick={_.partial(onItemClick, 'table', {name: name, schema: schema})} />}
+          key={tablename}
+          primaryText={tablename}
+          leftCheckbox={<Checkbox
+              onClick={_.partial(onItemClick, 'table', {
+                tablename: tablename,
+                schemaname: schemaname
+              })}
+              />}
         />
       })
       return <ListItem
-        key={schema}
-        primaryText={schema}
+        key={schemaname}
+        primaryText={schemaname}
         primaryTogglesNestedList={true}
         nestedItems={sublist}
       />
@@ -45,6 +49,7 @@ class Menu extends Component {
         primaryTogglesNestedList={true}
         leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
         nestedItems={list}
+        onClick={_.partial(onItemClick, 'pg_tables')}
       />
     </List>
   }
@@ -55,7 +60,7 @@ class LeftNav extends Component {
   render() {
     const { menu, onItemClick, open } = this.props
     return <Drawer open={open}>
-      <Menu menu={menu} onItemClick={onItemClick} />
+      <Menu onItemClick={onItemClick} />
     </Drawer>
   }
 }
