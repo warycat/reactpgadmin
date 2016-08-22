@@ -15,14 +15,17 @@ function OpenInNewTab(url) {
 }
 
 function buildNestedItem(tables, schemaname) {
+  const store = this
   const items = tables.map(table => {
+    const hash = schemaname + '.' + table.table_name
+    const checkbox = store.indexedTables[hash] || {checked: false}
     return <ListItem
       key={table.table_name}
       primaryText={table.table_name}
       leftCheckbox={
         <Checkbox
-          checked={table.checked}
-          onClick={()=> table.checked = !table.checked}
+          checked={checkbox.checked}
+          onClick={()=> checkbox.checked = !checkbox.checked}
         />
       }
     />

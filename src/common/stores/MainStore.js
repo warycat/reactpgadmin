@@ -5,6 +5,7 @@ import ajax from 'superagent-bluebird-promise'
 export default class MainStore {
   @observable title
   @observable tables
+  @observable indexedTables
   @observable views
   @observable columns
   @observable err
@@ -45,6 +46,7 @@ export default class MainStore {
     this.version = obj.version
     this.params = obj.params
     this.tables = []
+    this.indexedTables = {}
     this.views = []
     this.columns = []
     this.leftNav = {
@@ -74,10 +76,14 @@ export default class MainStore {
       .query({text: 'SELECT * FROM INFORMATION_SCHEMA.TABLES ORDER BY TABLE_NAME'})
       .then(res => {
         var tables = _.cloneDeep(res.body)
-        this.tables = tables.map(table => {
-          table.checked = false
-          return table
+        var indexedTables = _.cloneDeep(res.body)
+        this.tables = tables
+        const self = this
+        indexedTables.each(table => {
+          const hash = table.schema_name + '.' + table.table_name
+          self.indexedTables[hash] = observable({hash: hash, checked: false})
         })
+        console.log(table)
       })
       .catch(err => {
         this.err = err
