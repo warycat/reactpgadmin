@@ -29,7 +29,7 @@ export default class MainStore {
   @computed get views_tablenames() {
     return this.views.reduce((dict, view) => {
       dict[view.table_schema] = dict[view.table_schema] || []
-      dict[view.table_schema].push(view.table_name)
+      dict[view.table_schema].push(view)
       return dict
     }, {})
   }
@@ -88,7 +88,11 @@ export default class MainStore {
     ajax.get('/db/query')
       .query({text: 'SELECT * FROM INFORMATION_SCHEMA.VIEWS ORDER BY TABLE_NAME'})
       .then(res => {
-        this.views = _.cloneDeep(res.body)
+        var views = _.cloneDeep(res.body)
+        this.views = views.map(view => {
+          view.checked = false
+          return view
+        })
       })
       .catch(err => {
         this.err = err

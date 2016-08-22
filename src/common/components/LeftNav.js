@@ -36,12 +36,41 @@ function buildNestedItem(tables, schemaname) {
 }
 
 @inject('store') @observer
-class Menu extends Component {
-
+class ListItemTables extends Component {
   render() {
-    const { store, onItemClick } = this.props
+    const { store } = this.props
     const tableItems = _.map(store.tables_tablenames, buildNestedItem.bind(store))
+    return <ListItem
+      key="tables"
+      primaryText="TABLES"
+      primaryTogglesNestedList={true}
+      leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
+      nestedItems={tableItems}
+      onClick={() => store.requestTables()}
+    />
+  }
+}
+
+@inject('store') @observer
+class ListItemViews extends Component {
+  render() {
+    const { store } = this.props
     const viewItems = _.map(store.views_tablenames, buildNestedItem.bind(store))
+    return <ListItem
+      key="views"
+      primaryText="VIEWS"
+      primaryTogglesNestedList={true}
+      leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
+      nestedItems={viewItems}
+      onClick={() => store.requestViews()}
+    />
+  }
+}
+
+@inject('store') @observer
+class Menu extends Component {
+  render() {
+    const { store } = this.props
     return <List>
       <ListItem
         key="home"
@@ -49,24 +78,8 @@ class Menu extends Component {
         leftIcon={<FontIcon className='material-icons' >home</FontIcon>}
         onClick={() => store.leftNav.drawer.open = false}
       />
-      <ListItem
-        key="tables"
-        primaryText="TABLES"
-        primaryTogglesNestedList={true}
-        leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
-        nestedItems={tableItems}
-        onClick={() => {
-          store.requestTables()
-        }}
-      />
-      <ListItem
-        key="views"
-        primaryText="VIEWS"
-        primaryTogglesNestedList={true}
-        leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
-        nestedItems={viewItems}
-        onClick={() => store.requestViews()}
-      />
+      <ListItemTables />
+      <ListItemViews />
     </List>
   }
 }
