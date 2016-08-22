@@ -19,12 +19,16 @@ function buildNestedItem(tablenames, schemaname) {
     return <ListItem
       key={tablename}
       primaryText={tablename}
-      leftCheckbox={<Checkbox />}
+      leftCheckbox={<Checkbox
+        onClick={()=>{
+          this.requestColumns()
+        }}
+      />}
     />
   })
   return <ListItem
     key={schemaname}
-    primaryText={schemaname}
+    primaryText={`${schemaname} (${items.length})`}
     primaryTogglesNestedList={true}
     nestedItems={items}
   />
@@ -35,13 +39,14 @@ class Menu extends Component {
 
   render() {
     const { store, onItemClick } = this.props
-    const tableItems = _.map(store.pg_tables_tablenames, buildNestedItem)
-    const viewItems = _.map(store.pg_views_tablenames, buildNestedItem)
+    const tableItems = _.map(store.tables_tablenames, buildNestedItem.bind(store))
+    const viewItems = _.map(store.views_tablenames, buildNestedItem.bind(store))
     return <List>
       <ListItem
         key="home"
         primaryText="HOME"
         leftIcon={<FontIcon className='material-icons' >home</FontIcon>}
+        onClick={() => store.leftNav.drawer.open = false}
       />
       <ListItem
         key="tables"
@@ -49,7 +54,9 @@ class Menu extends Component {
         primaryTogglesNestedList={true}
         leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
         nestedItems={tableItems}
-        onClick={()=>store.requestTables()}
+        onClick={() => {
+          store.requestTables()
+        }}
       />
       <ListItem
         key="views"
@@ -57,7 +64,7 @@ class Menu extends Component {
         primaryTogglesNestedList={true}
         leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
         nestedItems={viewItems}
-        onClick={()=>store.requestViews()}
+        onClick={() => store.requestViews()}
       />
     </List>
   }

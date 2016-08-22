@@ -4,9 +4,11 @@ import ajax from 'superagent-bluebird-promise'
 
 export default class MainStore {
   @observable title
-  @observable pg_tables
-  @observable pg_views
+  @observable tables
+  @observable views
+  @observable columns
   @observable err
+  @observable leftNav
   userAgent
   babelEnv
   version
@@ -16,24 +18,24 @@ export default class MainStore {
     return `${this.title} V${this.version}`
   }
 
-  @computed get pg_tables_tablenames() {
-    return this.pg_tables.reduce((dict, table) => {
-      dict[table.schemaname] = dict[table.schemaname] || []
-      dict[table.schemaname].push(table.tablename)
+  @computed get tables_tablenames() {
+    return this.tables.reduce((dict, table) => {
+      dict[table.table_schema] = dict[table.table_schema] || []
+      dict[table.table_schema].push(table.table_name)
       return dict
     }, {})
   }
 
-  @computed get pg_views_tablenames() {
-    return this.pg_views.reduce((dict, view) => {
-      dict[view.schemaname] = dict[view.schemaname] || []
-      dict[view.schemaname].push(view.viewname)
+  @computed get views_tablenames() {
+    return this.views.reduce((dict, view) => {
+      dict[view.table_schema] = dict[view.table_schema] || []
+      dict[view.table_schema].push(view.table_name)
       return dict
     }, {})
   }
 
-  @computed get pg_views_schemanames() {
-    return _(this.pg_views).map(view => view.schemaname).uniq().value()
+  @computed get views_schemanames() {
+    return _(this.views).map(view => view.schemaname).uniq().value()
   }
 
   constructor(obj){
@@ -42,8 +44,14 @@ export default class MainStore {
     this.nodeEnv = obj.nodeEnv
     this.version = obj.version
     this.params = obj.params
-    this.pg_tables = []
-    this.pg_views = []
+    this.tables = []
+    this.views = []
+    this.columns = []
+    this.leftNav = {
+      drawer: {
+        open: false
+      }
+    }
     this.err = null
   }
 
@@ -61,11 +69,12 @@ export default class MainStore {
     this.title = 'React PG Admin'
   }
 
+
   requestTables() {
     ajax.get('/db/query')
-      .query({text: 'SELECT * FROM PG_CATALOG.PG_TABLES'})
+      .query({text: 'SELECT * FROM INFORMATION_SCHEMA.TABLES ORDER BY TABLE_NAME'})
       .then(res => {
-        this.pg_tables = _.cloneDeep(res.body)
+        this.tables = _.cloneDeep(res.body)
       })
       .catch(err => {
         this.err = err
@@ -74,9 +83,21 @@ export default class MainStore {
 
   requestViews() {
     ajax.get('/db/query')
-      .query({text: 'SELECT * FROM PG_CATALOG.PG_VIEWS'})
+      .query({text: 'SELECT * FROM INFORMATION_SCHEMA.VIEWS ORDER BY TABLE_NAME'})
       .then(res => {
-        this.pg_views = res.body
+        this.views = _.cloneDeep(res.body)
+      })
+      .catch(err => {
+        this.err = err
+      })
+  }
+
+  requestColumns() {
+    ajax.get('/db/query')
+      .query({text: 'SELECT * FROM INFORMATION_SCHEMA.COLUMNS'})
+      .then(res => {
+        console.log(res.body)
+        this.columns = _.cloneDeep(res.body)
       })
       .catch(err => {
         this.err = err

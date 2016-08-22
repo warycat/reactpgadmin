@@ -7,17 +7,16 @@ import LeftNav from './LeftNav.js'
 
 @inject('store') @observer
 class MainView extends Component {
-  @observable drawer = {open: false}
   @observable table = {display: false, name: '', schema: ''}
   render() {
     const { store } = this.props
     return <div>
       <AppBar
         title={store.titleAndVersion}
-        onLeftIconButtonTouchTap={() => this.drawer.open = true}
+        onLeftIconButtonTouchTap={() => store.leftNav.drawer.open = true}
       />
       <LeftNav
-        open={this.drawer.open}
+        open={store.leftNav.drawer.open}
         onItemClick={this.handleMenuItemClick}
       />
     </div>
@@ -25,7 +24,7 @@ class MainView extends Component {
   handleMenuItemClick = (item, payload) => {
     switch(item){
       case 'home':
-        this.drawer.open = false
+        store.leftNav.drawer.open = false
         break
       case 'pg_tables':
         this.props.store.requestTables()
