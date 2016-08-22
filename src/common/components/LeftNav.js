@@ -14,16 +14,17 @@ function OpenInNewTab(url) {
   win.focus();
 }
 
-function buildNestedItem(tablenames, schemaname) {
-  const items = tablenames.map(tablename => {
+function buildNestedItem(tables, schemaname) {
+  const items = tables.map(table => {
     return <ListItem
-      key={tablename}
-      primaryText={tablename}
-      leftCheckbox={<Checkbox
-        onClick={()=>{
-          this.requestColumns()
-        }}
-      />}
+      key={table.table_name}
+      primaryText={table.table_name}
+      leftCheckbox={
+        <Checkbox
+          checked={table.checked}
+          onClick={()=> table.checked = !table.checked}
+        />
+      }
     />
   })
   return <ListItem

@@ -21,7 +21,7 @@ export default class MainStore {
   @computed get tables_tablenames() {
     return this.tables.reduce((dict, table) => {
       dict[table.table_schema] = dict[table.table_schema] || []
-      dict[table.table_schema].push(table.table_name)
+      dict[table.table_schema].push(table)
       return dict
     }, {})
   }
@@ -69,12 +69,15 @@ export default class MainStore {
     this.title = 'React PG Admin'
   }
 
-
   requestTables() {
     ajax.get('/db/query')
       .query({text: 'SELECT * FROM INFORMATION_SCHEMA.TABLES ORDER BY TABLE_NAME'})
       .then(res => {
-        this.tables = _.cloneDeep(res.body)
+        var tables = _.cloneDeep(res.body)
+        this.tables = tables.map(table => {
+          table.checked = false
+          return table
+        })
       })
       .catch(err => {
         this.err = err
