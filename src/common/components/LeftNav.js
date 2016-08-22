@@ -14,42 +14,50 @@ function OpenInNewTab(url) {
   win.focus();
 }
 
+function buildNestedItem(tablenames, schemaname) {
+  const items = tablenames.map(tablename => {
+    return <ListItem
+      key={tablename}
+      primaryText={tablename}
+      leftCheckbox={<Checkbox />}
+    />
+  })
+  return <ListItem
+    key={schemaname}
+    primaryText={schemaname}
+    primaryTogglesNestedList={true}
+    nestedItems={items}
+  />
+}
+
 @inject('store') @observer
 class Menu extends Component {
+
   render() {
-    const { onItemClick, store } = this.props
-    const list = _.map(store.tablesLists, (tables, schemaname) => {
-      const sublist = tables.map(tablename => {
-        return <ListItem
-          key={tablename}
-          primaryText={tablename}
-          leftCheckbox={<Checkbox
-              onClick={_.partial(onItemClick, 'table', {
-                tablename: tablename,
-                schemaname: schemaname
-              })}
-              />}
-        />
-      })
-      return <ListItem
-        key={schemaname}
-        primaryText={schemaname}
-        primaryTogglesNestedList={true}
-        nestedItems={sublist}
-      />
-    })
+    const { store, onItemClick } = this.props
+    const tableItems = _.map(store.pg_tables_tablenames, buildNestedItem)
+    const viewItems = _.map(store.pg_views_tablenames, buildNestedItem)
     return <List>
       <ListItem
-        primaryText="Home"
+        key="home"
+        primaryText="HOME"
         leftIcon={<FontIcon className='material-icons' >home</FontIcon>}
-        onClick={_.partial(onItemClick, 'home')}
       />
       <ListItem
-        primaryText="Tables"
+        key="tables"
+        primaryText="TABLES"
         primaryTogglesNestedList={true}
         leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
-        nestedItems={list}
-        onClick={_.partial(onItemClick, 'pg_tables')}
+        nestedItems={tableItems}
+        onClick={()=>store.requestTables()}
+      />
+      <ListItem
+        key="views"
+        primaryText="VIEWS"
+        primaryTogglesNestedList={true}
+        leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
+        nestedItems={viewItems}
+        onClick={()=>store.requestViews()}
       />
     </List>
   }
@@ -58,7 +66,7 @@ class Menu extends Component {
 @observer
 class LeftNav extends Component {
   render() {
-    const { menu, onItemClick, open } = this.props
+    const { onItemClick, open } = this.props
     return <Drawer open={open}>
       <Menu onItemClick={onItemClick} />
     </Drawer>

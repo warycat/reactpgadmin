@@ -9,13 +9,14 @@ import webpackConfig from '../../webpack.config'
 import App from '../common/components/App'
 import MainStore from '../common/stores/MainStore'
 import packageJson from '../../package.json'
-import massive from 'massive'
+import injectTapEventPlugin from 'react-tap-event-plugin'
+injectTapEventPlugin()
+
 const server = express()
 const port = process.env.PORT || 3000
 
 const compiler = webpack(webpackConfig)
 const db = pgp()(process.env.PG_URL)
-console.log(db)
 
 server.use(webpackDevMiddleware(compiler, {
   noInfo: true,
@@ -31,6 +32,7 @@ function renderFullPage(app, preloadedState) {
       <head>
         <title>Mobx Server Rendering</title>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="shortcut icon" type="image/png" href="http://cdn.sstatic.net/Sites/stackoverflow/img/favicon.ico?v=4f32ecc8f43d"/>
       </head>
       <body>
         <div id="app">${app}</div>
@@ -44,7 +46,7 @@ function renderFullPage(app, preloadedState) {
 }
 
 function handleRender(req, res) {
-  const store = MainStore.fromJS({
+  const store = new MainStore({
     title: 'reactpgadmin',
     userAgent: req.headers['user-agent'],
     nodeEnv: process.env.NODE_ENV,
@@ -54,7 +56,7 @@ function handleRender(req, res) {
   const app = renderToString(
     <App store={store} />
   )
-  const finalState = store.toJS()
+  const finalState = store.serialize()
   res.send(renderFullPage(app, finalState))
 }
 
@@ -62,9 +64,10 @@ server.get('/', handleRender)
 
 server.get('/db/query', (req, res) => {
   const qs = req.query
+  console.log(qs)
   db.query(qs.text, qs.values)
     .then(data => res.json(data))
-    .catch(err => res.json(err))
+    .catch(err => console.log(err))
 })
 
 server.listen(port, (error) => {
