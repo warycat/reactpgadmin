@@ -16,6 +16,6 @@ render(
   rootElement
 )
 
-// autorun(()=>{
-//   console.log(JSON.parse(JSON.stringify(store.pg_views)))
-// })
+autorun(()=>{
+  // console.log(JSON.parse(JSON.stringify(store.indexedTables)))
+})

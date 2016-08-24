@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, { Component } from 'react'
+import React, { Component} from 'react'
 import { observable } from 'mobx'
 import { observer, inject } from 'mobx-react'
 import AppBar from 'material-ui/AppBar'

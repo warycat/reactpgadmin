@@ -14,35 +14,44 @@ function OpenInNewTab(url) {
   win.focus();
 }
 
-function buildNestedItem(tables, schemaname) {
-  const store = this
-  const items = tables.map(table => {
-    const hash = schemaname + '.' + table.table_name
-    const checkbox = store.indexedTables[hash] || {checked: false}
-    return <ListItem
-      key={table.table_name}
+@observer
+class ListItemTableName extends Component {
+  render (){
+    const {table, ...other} = this.props
+    return <ListItem {...other}
       primaryText={table.table_name}
       leftCheckbox={
         <Checkbox
-          checked={checkbox.checked}
-          onClick={()=> checkbox.checked = !checkbox.checked}
+          checked={table.checked}
+          onClick={()=> table.checked = !table.checked}
         />
       }
     />
-  })
-  return <ListItem
-    key={schemaname}
-    primaryText={`${schemaname} (${items.length})`}
-    primaryTogglesNestedList={true}
-    nestedItems={items}
-  />
+  }
+}
+
+@inject('store') @observer
+class ListItemSchemaName extends Component {
+  render() {
+    const {store, schemaname, ...other} = this.props
+    const items = store.tables_tablenames[schemaname].map(table => {
+      return <ListItemTableName key={table.table_name} table={table} />
+    })
+    return <ListItem {...other}
+      primaryText={`${schemaname} (${items.length})`}
+      primaryTogglesNestedList={true}
+      nestedItems={items}
+    />
+  }
 }
 
 @inject('store') @observer
 class ListItemTables extends Component {
   render() {
     const { store } = this.props
-    const tableItems = _.map(store.tables_tablenames, buildNestedItem.bind(store))
+    const tableItems = Object.keys(store.tables_tablenames).map(schemaname => {
+      return <ListItemSchemaName key={schemaname} schemaname={schemaname} />
+    })
     return <ListItem
       key="tables"
       primaryText="TABLES"
@@ -50,22 +59,6 @@ class ListItemTables extends Component {
       leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
       nestedItems={tableItems}
       onClick={() => store.requestTables()}
-    />
-  }
-}
-
-@inject('store') @observer
-class ListItemViews extends Component {
-  render() {
-    const { store } = this.props
-    const viewItems = _.map(store.views_tablenames, buildNestedItem.bind(store))
-    return <ListItem
-      key="views"
-      primaryText="VIEWS"
-      primaryTogglesNestedList={true}
-      leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
-      nestedItems={viewItems}
-      onClick={() => store.requestViews()}
     />
   }
 }
@@ -82,7 +75,6 @@ class Menu extends Component {
         onClick={() => store.leftNav.drawer.open = false}
       />
       <ListItemTables />
-      <ListItemViews />
     </List>
   }
 }

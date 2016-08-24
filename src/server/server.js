@@ -49,7 +49,6 @@ function handleRender(req, res) {
   const store = new MainStore({
     title: 'reactpgadmin',
     userAgent: req.headers['user-agent'],
-    nodeEnv: process.env.NODE_ENV,
     version: packageJson.version,
     params: req.query,
   })

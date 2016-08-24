@@ -1,17 +1,14 @@
-import { observable, computed, action, asReference} from 'mobx'
+import { observable, computed, action, asFlat, asMap } from 'mobx'
 import _ from 'lodash'
 import ajax from 'superagent-bluebird-promise'
 
 export default class MainStore {
-  @observable title
-  @observable tables
-  @observable indexedTables
-  @observable views
-  @observable columns
-  @observable err
-  @observable leftNav
+  @observable title = ''
+  @observable tables = asFlat([])
+  @observable views = asFlat([])
+  @observable columns = asFlat([])
+  @observable leftNav = {drawer: {open : false}}
   userAgent
-  babelEnv
   version
   params
 
@@ -42,19 +39,8 @@ export default class MainStore {
   constructor(obj){
     this.title = obj.title
     this.userAgent = obj.userAgent
-    this.nodeEnv = obj.nodeEnv
     this.version = obj.version
     this.params = obj.params
-    this.tables = []
-    this.indexedTables = {}
-    this.views = []
-    this.columns = []
-    this.leftNav = {
-      drawer: {
-        open: false
-      }
-    }
-    this.err = null
   }
 
   serialize() {
@@ -74,20 +60,13 @@ export default class MainStore {
   requestTables() {
     ajax.get('/db/query')
       .query({text: 'SELECT * FROM INFORMATION_SCHEMA.TABLES ORDER BY TABLE_NAME'})
-      .then(res => {
+      .then(action(res => {
         var tables = _.cloneDeep(res.body)
-        var indexedTables = _.cloneDeep(res.body)
-        this.tables = tables
-        const self = this
-        indexedTables.each(table => {
-          const hash = table.schema_name + '.' + table.table_name
-          self.indexedTables[hash] = observable({hash: hash, checked: false})
+        this.tables = tables.map(table => {
+          table.checked = false
+          return observable(table)
         })
-        console.log(table)
-      })
-      .catch(err => {
-        this.err = err
-      })
+      }))
   }
 
   requestViews() {
@@ -100,9 +79,6 @@ export default class MainStore {
           return view
         })
       })
-      .catch(err => {
-        this.err = err
-      })
   }
 
   requestColumns() {
@@ -111,9 +87,6 @@ export default class MainStore {
       .then(res => {
         console.log(res.body)
         this.columns = _.cloneDeep(res.body)
-      })
-      .catch(err => {
-        this.err = err
       })
   }
 }
