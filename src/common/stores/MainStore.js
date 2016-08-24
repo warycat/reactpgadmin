@@ -8,9 +8,6 @@ export default class MainStore {
   @observable views = asFlat([])
   @observable columns = asFlat([])
   @observable leftNav = {drawer: {open : false}}
-  userAgent
-  version
-  params
 
   @computed get titleAndVersion() {
     return `${this.title} V${this.version}`
