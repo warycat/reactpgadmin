@@ -1,4 +1,4 @@
-import { observable, computed, action, asFlat, asMap } from 'mobx'
+import { observable, computed, action, asFlat, asMap, autorun } from 'mobx'
 import _ from 'lodash'
 import ajax from 'superagent-bluebird-promise'
 
@@ -13,12 +13,18 @@ export default class MainStore {
     return `${this.title} V${this.version}`
   }
 
-  @computed get tables_tablenames() {
+  @computed get tablesInSchema() {
     return this.tables.reduce((dict, table) => {
       dict[table.table_schema] = dict[table.table_schema] || []
       dict[table.table_schema].push(table)
       return dict
     }, {})
+  }
+
+  @computed get tablesChecked() {
+    return this.tables.filter(table => table.checked).map(table => {
+      return {table_schema: table.table_schema, table_name: table.table_name}
+    })
   }
 
   @computed get views_tablenames() {
@@ -38,6 +44,9 @@ export default class MainStore {
     this.userAgent = obj.userAgent
     this.version = obj.version
     this.params = obj.params
+    this.refreshColumns = autorun(()=>{
+      this.requestColumns(this.tablesChecked)
+    })
   }
 
   serialize() {
@@ -78,9 +87,12 @@ export default class MainStore {
       })
   }
 
-  requestColumns() {
+  requestColumns(tablesChecked) {
+    if(!tablesChecked.length) return
+    const values = tablesChecked.map(table => `('${table.table_schema}', '${table.table_name}')`)
+
     ajax.get('/db/query')
-      .query({text: 'SELECT * FROM INFORMATION_SCHEMA.COLUMNS'})
+      .query({text: "SELECT * FROM ( VALUES " + values.join(', ') + " ) AS tableChecked(schema_name, table_name)"})
       .then(res => {
         console.log(res.body)
         this.columns = _.cloneDeep(res.body)

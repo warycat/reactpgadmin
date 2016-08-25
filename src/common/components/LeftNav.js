@@ -34,7 +34,7 @@ class ListItemTableName extends Component {
 class ListItemSchemaName extends Component {
   render() {
     const {store, schemaname, ...other} = this.props
-    const items = store.tables_tablenames[schemaname].map(table => {
+    const items = store.tablesInSchema[schemaname].map(table => {
       return <ListItemTableName key={table.table_name} table={table} />
     })
     return <ListItem {...other}
@@ -49,7 +49,7 @@ class ListItemSchemaName extends Component {
 class ListItemTables extends Component {
   render() {
     const { store } = this.props
-    const tableItems = Object.keys(store.tables_tablenames).map(schemaname => {
+    const tableItems = Object.keys(store.tablesInSchema).map(schemaname => {
       return <ListItemSchemaName key={schemaname} schemaname={schemaname} />
     })
     return <ListItem

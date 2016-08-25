@@ -15,7 +15,3 @@ render(
   <App store={store} />,
   rootElement
 )
-
-autorun(()=>{
-  // console.log(JSON.parse(JSON.stringify(store.indexedTables)))
-})
