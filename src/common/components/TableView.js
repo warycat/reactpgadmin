@@ -38,7 +38,7 @@ class TableView extends Component {
 
   render() {
     const {store} = this.props
-    const columns = store.columns.map(column => <tr><td>{column.column_name}</td></tr> )
+    const columns = store.columns.map(column => <TableRow><TableRowColumn>{column.column_name}</TableRowColumn></TableRow> )
 
     return <div style={store.tableViewStyle}> 
     <Table>
@@ -48,7 +48,7 @@ class TableView extends Component {
           <TableHeaderColumn>column_value</TableHeaderColumn>
         </TableRow>
       </TableHeader>
-      <TableBody>
+      <TableBody preScanRows={false}>
        {columns}
       </TableBody>
     </Table>
