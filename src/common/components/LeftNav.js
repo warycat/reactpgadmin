@@ -1,6 +1,4 @@
-import _ from 'lodash'
 import React, { Component } from 'react'
-import { observable } from 'mobx'
 import { observer, inject } from 'mobx-react'
 import Drawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
@@ -79,12 +77,12 @@ class Menu extends Component {
   }
 }
 
-@observer
+@inject('store') @observer
 class LeftNav extends Component {
   render() {
-    const { onItemClick, open } = this.props
-    return <Drawer open={open}>
-      <Menu onItemClick={onItemClick} />
+    const { store } = this.props
+    return <Drawer open={store.leftNav.drawer.open}>
+      <Menu />
     </Drawer>
   }
 }

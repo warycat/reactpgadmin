@@ -1,6 +1,7 @@
 import { observable, computed, action, asFlat, asMap, autorun } from 'mobx'
 import _ from 'lodash'
 import ajax from 'superagent-bluebird-promise'
+import transitions from 'material-ui/styles/transitions'
 
 export default class MainStore {
   @observable title = ''
@@ -8,6 +9,14 @@ export default class MainStore {
   @observable views = asFlat([])
   @observable columns = asFlat([])
   @observable leftNav = {drawer: {open : false}}
+
+  @computed get tableViewStyle() {
+    return {
+      paddingLeft: this.leftNav.drawer.open ? 256 : 0,
+      transition: transitions.easeOut(null, 'padding', null)
+
+    }
+  }
 
   @computed get titleAndVersion() {
     return `${this.title} V${this.version}`
@@ -44,9 +53,6 @@ export default class MainStore {
     this.userAgent = obj.userAgent
     this.version = obj.version
     this.params = obj.params
-    this.refreshColumns = autorun(()=>{
-      this.requestColumns(this.tablesChecked)
-    })
   }
 
   serialize() {
@@ -65,7 +71,7 @@ export default class MainStore {
 
   requestTables() {
     ajax.get('/db/query')
-      .query({text: 'SELECT * FROM INFORMATION_SCHEMA.TABLES ORDER BY TABLE_NAME'})
+      .query({text: 'SELECT * FROM INFORMATION_SCHEMA.TABLES ORDER BY table_name'})
       .then(action(res => {
         var tables = _.cloneDeep(res.body)
         this.tables = tables.map(table => {
@@ -77,7 +83,7 @@ export default class MainStore {
 
   requestViews() {
     ajax.get('/db/query')
-      .query({text: 'SELECT * FROM INFORMATION_SCHEMA.VIEWS ORDER BY TABLE_NAME'})
+      .query({text: 'SELECT * FROM INFORMATION_SCHEMA.VIEWS ORDER BY table_name'})
       .then(res => {
         var views = _.cloneDeep(res.body)
         this.views = views.map(view => {
@@ -88,7 +94,10 @@ export default class MainStore {
   }
 
   requestColumns(tablesChecked) {
-    if(!tablesChecked.length) return
+    if (!tablesChecked.length) {
+      this.columns = []
+      return
+    }
     const values = tablesChecked.map(table => `('${table.table_schema}', '${table.table_name}')`).join(', ')
     const text = `
       SELECT * FROM ( VALUES ${values} ) AS t1(table_schema, table_name)
@@ -97,7 +106,6 @@ export default class MainStore {
     ajax.get('/db/query')
       .query({text: text})
       .then(res => {
-        console.log(res.body)
         this.columns = _.cloneDeep(res.body)
       })
   }
