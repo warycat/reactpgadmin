@@ -89,10 +89,13 @@ export default class MainStore {
 
   requestColumns(tablesChecked) {
     if(!tablesChecked.length) return
-    const values = tablesChecked.map(table => `('${table.table_schema}', '${table.table_name}')`)
-
+    const values = tablesChecked.map(table => `('${table.table_schema}', '${table.table_name}')`).join(', ')
+    const text = `
+      SELECT * FROM ( VALUES ${values} ) AS t1(table_schema, table_name)
+      INNER JOIN INFORMATION_SCHEMA.COLUMNS AS t2
+      ON t1.table_schema = t2.table_schema AND t1.table_name = t2.table_name`
     ajax.get('/db/query')
-      .query({text: "SELECT * FROM ( VALUES " + values.join(', ') + " ) AS tableChecked(schema_name, table_name)"})
+      .query({text: text})
       .then(res => {
         console.log(res.body)
         this.columns = _.cloneDeep(res.body)
