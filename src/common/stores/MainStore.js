@@ -8,7 +8,8 @@ export default class MainStore {
   @observable tables = asFlat([])
   @observable views = asFlat([])
   @observable columns = asFlat([])
-  @observable leftNav = {drawer: {open : false}}
+  @observable leftNav = {drawer: {open: false}}
+  @observable rightPanel = {drawer: {open: false}}
 
   @computed get tableViewStyle() {
     return {

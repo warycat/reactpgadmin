@@ -1,8 +1,9 @@
 import React, { Component} from 'react'
 import { observer, inject } from 'mobx-react'
 import AppBar from 'material-ui/AppBar'
-import LeftNav from './LeftNav.js'
+import LeftNav from './LeftNav'
 import TableView from './TableView'
+import RightPanel from './RightPanel'
 
 @inject('store') @observer
 class MainView extends Component {
@@ -15,6 +16,7 @@ class MainView extends Component {
       />
       <LeftNav />
       <TableView />
+      <RightPanel />
     </div>
   }
 }

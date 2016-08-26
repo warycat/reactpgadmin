@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
 import Drawer from 'material-ui/Drawer'
-import MenuItem from 'material-ui/MenuItem'
 import FontIcon from 'material-ui/FontIcon'
 import Checkbox from 'material-ui/Checkbox'
-import backIcon from 'material-ui/svg-icons/navigation/arrow-back.js'
 import {List, ListItem} from 'material-ui/List'
 
 function OpenInNewTab(url) {
@@ -62,7 +60,7 @@ class ListItemTables extends Component {
 }
 
 @inject('store') @observer
-class Menu extends Component {
+class ListMenu extends Component {
   render() {
     const { store } = this.props
     return <List>
@@ -82,7 +80,7 @@ class LeftNav extends Component {
   render() {
     const { store } = this.props
     return <Drawer open={store.leftNav.drawer.open}>
-      <Menu />
+      <ListMenu />
     </Drawer>
   }
 }
