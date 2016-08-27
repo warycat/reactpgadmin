@@ -31,7 +31,6 @@ function renderFullPage(app, preloadedState) {
     <html>
       <head>
         <title>Mobx Server Rendering</title>
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="shortcut icon" type="image/png" href="http://cdn.sstatic.net/Sites/stackoverflow/img/favicon.ico?v=4f32ecc8f43d"/>
       </head>
       <body>

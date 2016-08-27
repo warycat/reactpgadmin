@@ -14,6 +14,7 @@ export default class MainStore {
   @computed get tableViewStyle() {
     return {
       paddingLeft: this.leftNav.drawer.open ? 256 : 0,
+      paddingRight: this.rightPanel.drawer.open ? 256 : 0,
       transition: transitions.easeOut(null, 'padding', null)
 
     }

@@ -4,6 +4,7 @@ import Drawer from 'material-ui/Drawer'
 import FontIcon from 'material-ui/FontIcon'
 import Checkbox from 'material-ui/Checkbox'
 import {List, ListItem} from 'material-ui/List'
+import {ActionHome, ActionViewColumn} from 'material-ui/svg-icons'
 
 function OpenInNewTab(url) {
   var win = window.open(url, '_blank');
@@ -52,7 +53,7 @@ class ListItemTables extends Component {
       key="tables"
       primaryText="TABLES"
       primaryTogglesNestedList={true}
-      leftIcon={<FontIcon className='material-icons' >view_column</FontIcon>}
+      leftIcon={<ActionViewColumn />}
       nestedItems={tableItems}
       onClick={() => store.requestTables()}
     />
@@ -65,9 +66,9 @@ class ListMenu extends Component {
     const { store } = this.props
     return <List>
       <ListItem
-        key="home"
+        key="Home"
         primaryText="HOME"
-        leftIcon={<FontIcon className='material-icons' >home</FontIcon>}
+        leftIcon={<ActionHome />}
         onClick={() => store.leftNav.drawer.open = false}
       />
       <ListItemTables />

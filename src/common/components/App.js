@@ -11,7 +11,6 @@ import MainView from './MainView'
 class App extends Component {
   render() {
     const { store } = this.props
-    const iconStyles = { margin: 12 }
     const theme = getMuiTheme(darkBaseTheme, { userAgent: store.userAgent })
     return (
       <div>
@@ -20,7 +19,7 @@ class App extends Component {
             <MainView />
           </Provider>
         </MuiThemeProvider>
-        <DevTools />
+        <DevTools position={{bottom:0, right: 0}}/>
       </div>
     )
   }
