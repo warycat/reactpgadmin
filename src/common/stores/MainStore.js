@@ -4,10 +4,11 @@ import ajax from 'superagent-bluebird-promise'
 import transitions from 'material-ui/styles/transitions'
 
 export default class MainStore {
-  @observable title = ''
+  @observable title = 'React PG Admin'
   @observable tables = asFlat([])
   @observable views = asFlat([])
   @observable columns = asFlat([])
+  @observable rows = asFlat([])
   @observable leftNav = {drawer: {open: false}}
   @observable rightPanel = {drawer: {open: false}}
 
@@ -38,6 +39,17 @@ export default class MainStore {
     })
   }
 
+  @computed get columnsChecked() {
+    return this.columns.filter(column => column.checked).map(column => {
+      return {
+        column_name: column.column_name,
+        table_name: column.table_name,
+        table_schema: column.table_schema,
+        data_type: column.data_type,
+      }
+    })
+  }
+
   @computed get views_tablenames() {
     return this.views.reduce((dict, view) => {
       dict[view.table_schema] = dict[view.table_schema] || []
@@ -65,10 +77,6 @@ export default class MainStore {
       version: this.version,
       params: this.params,
     }
-  }
-
-  changeTitle() {
-    this.title = 'React PG Admin'
   }
 
   requestTables() {
@@ -108,7 +116,28 @@ export default class MainStore {
     ajax.get('/db/query')
       .query({text: text})
       .then(res => {
-        this.columns = _.cloneDeep(res.body)
+        var columns = _.cloneDeep(res.body)
+        this.columns = columns.map(column => {
+          column.checked = true
+          return observable(column)
+        })
+      })
+  }
+
+  requestRows(columnsChecked, tablesChecked) {
+    if (!columnsChecked.length) {
+      this.rows = []
+      return
+    }
+    const columns = columnsChecked.map(column => `${column.table_schema}.${column.table_name}.${column.column_name}`).join(', ')
+    const tables = tablesChecked.map(table => `${table.table_schema}.${table.table_name}`).join(', ')
+    const text = `SELECT ${columns} FROM ${tables} LIMIT 100`
+    ajax.get('/db/query')
+      .query({text: text})
+      .then(res => {
+        var rows = _.cloneDeep(res.body)
+        console.log(res.body)
+        this.rows = rows
       })
   }
 }

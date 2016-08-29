@@ -46,7 +46,7 @@ function renderFullPage(app, preloadedState) {
 
 function handleRender(req, res) {
   const store = new MainStore({
-    title: 'reactpgadmin',
+    title: 'React PG Admin',
     userAgent: req.headers['user-agent'],
     version: packageJson.version,
     params: req.query,

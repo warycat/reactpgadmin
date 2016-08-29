@@ -2,7 +2,7 @@ import React, { Component} from 'react'
 import { observer, inject } from 'mobx-react'
 import AppBar from 'material-ui/AppBar'
 import LeftNav from './LeftNav'
-import TableView from './TableView'
+import ResponsiveTableView from './ResponsiveTableView'
 import RightPanel from './RightPanel'
 import IconButton from 'material-ui/IconButton'
 import {NavigationMenu, ActionSettings} from 'material-ui/svg-icons'
@@ -14,6 +14,7 @@ class MainView extends Component {
     return <div>
       <AppBar
         title={store.titleAndVersion}
+        titleStyle={{textAlign: "center"}}
         iconElementLeft={
           <IconButton  onClick={() => store.leftNav.drawer.open = true}>
             <NavigationMenu />
@@ -26,7 +27,7 @@ class MainView extends Component {
         }
       />
       <LeftNav />
-      <TableView />
+      <ResponsiveTableView />
       <RightPanel />
     </div>
   }
