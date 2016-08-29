@@ -23,7 +23,7 @@ class ListItemColumns extends Component {
     return <ListItem {...other}
       key='columns'
       leftIcon={<ActionViewList />}
-      primaryText='COLUMNS'
+      primaryText={`COLUMNS (${store.columns.length})`}
       primaryTogglesNestedList={true}
       nestedItems={items}
     />

@@ -81,7 +81,7 @@ export default class MainStore {
 
   requestTables() {
     ajax.get('/db/query')
-      .query({text: 'SELECT * FROM INFORMATION_SCHEMA.TABLES ORDER BY table_name'})
+      .query({text: "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' ORDER BY table_name"})
       .then(action(res => {
         var tables = _.cloneDeep(res.body)
         this.tables = tables.map(table => {
@@ -118,7 +118,7 @@ export default class MainStore {
       .then(res => {
         var columns = _.cloneDeep(res.body)
         this.columns = columns.map(column => {
-          column.checked = true
+          column.checked = !column.data_type.match(/^(date|time|timestamp|interval|json)/)
           return observable(column)
         })
       })
