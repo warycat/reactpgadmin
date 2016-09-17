@@ -13,7 +13,9 @@
     "pg",
     "mobx",
     "material-ui",
-    "ssr"
+    "ssr",
+    "webpack",
+    "hmr"
   ],
   "author": "",
   "license": "ISC",
