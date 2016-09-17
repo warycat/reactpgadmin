@@ -7,3 +7,5 @@ To connect to database you need to update .env file
 PG_URL=postgres://username:password@hostname.amazonaws.com:5432/databasename?ssl=true
 
 This project use react mobx ssr pg material-ui
+
+[DEMO](http://reactpgadmin.herokuapp.com)
